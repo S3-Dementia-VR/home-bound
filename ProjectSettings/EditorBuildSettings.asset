@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/main_menu.unity
     guid: 8d1aff138a680b84e89df15753fb3ff2
+  - enabled: 1
+    path: Assets/Scenes/light_pattern_memory_game.unity
+    guid: e339cd518b5db9647906047a91439071
   m_configObjects: {}
