@@ -1,9 +1,22 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: d16fdf38ec97b6c4caa328ebcb91760f
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
   externalObjects: {}
+=======
+guid: c973b0e21a8c2c546840e34d62802f23
+ModelImporter:
+  serializedVersion: 19300
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RetroRoomDivider
+    second: {fileID: 2100000, guid: 2186b6d2540ed47898e4083d9a125561, type: 2}
+>>>>>>> ea9f33e96d8637abbb2a6a3cd819de63da5161c0
   materials:
     materialImportMode: 1
     materialName: 0
