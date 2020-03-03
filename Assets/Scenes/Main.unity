@@ -932,7 +932,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: walls-resize
       objectReference: {fileID: 0}
+    - target: {fileID: 201436962334360889, guid: 66534e420da2db54abf3782e01ff244b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2e77c29bd59d8794bbe3470b60fec83a, type: 2}
     - target: {fileID: 407964349040086282, guid: 66534e420da2db54abf3782e01ff244b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2e77c29bd59d8794bbe3470b60fec83a, type: 2}
+    - target: {fileID: 678817361337649842, guid: 66534e420da2db54abf3782e01ff244b,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -947,7 +957,17 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 2186b6d2540ed47898e4083d9a125561, type: 2}
+    - target: {fileID: 1850900582545709452, guid: 66534e420da2db54abf3782e01ff244b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2e77c29bd59d8794bbe3470b60fec83a, type: 2}
     - target: {fileID: 2025501727034943193, guid: 66534e420da2db54abf3782e01ff244b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2e77c29bd59d8794bbe3470b60fec83a, type: 2}
+    - target: {fileID: 2050351279200403234, guid: 66534e420da2db54abf3782e01ff244b,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -973,6 +993,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 2e77c29bd59d8794bbe3470b60fec83a, type: 2}
     - target: {fileID: 5543054147981725540, guid: 66534e420da2db54abf3782e01ff244b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2e77c29bd59d8794bbe3470b60fec83a, type: 2}
+    - target: {fileID: 5901304425896397461, guid: 66534e420da2db54abf3782e01ff244b,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -2341,7 +2366,7 @@ Terrain:
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 10652, guid: 0000000000000000f000000000000000, type: 0}
+  m_MaterialTemplate: {fileID: 2100000, guid: 5d8af8f434f69794eabd684fb44b4fbf, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
