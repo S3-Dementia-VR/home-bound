@@ -48,6 +48,9 @@ public class ProfileManager : MonoBehaviour
 
     public void showInfo()
     {
+        PatientUser patientUser = GameObject.FindObjectOfType<PatientUser>();
+
+        //patientUser.Age.text = int.Parse()
     }
 
     // Update is called once per frame
