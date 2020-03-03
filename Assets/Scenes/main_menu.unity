@@ -1550,6 +1550,7 @@ GameObject:
   - component: {fileID: 1765687204}
   - component: {fileID: 1765687203}
   - component: {fileID: 1765687202}
+  - component: {fileID: 1765687205}
   m_Layer: 5
   m_Name: AddNewProfileButton
   m_TagString: Untagged
@@ -1620,8 +1621,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 287861759}
-        m_MethodName: Save
+      - m_Target: {fileID: 1765687205}
+        m_MethodName: OnMouseClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1667,6 +1668,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1765687200}
   m_CullTransparentMesh: 0
+--- !u!114 &1765687205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765687200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94fedf1a62b366748ac2ee23c2918924, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneName: add_new_profile
 --- !u!1 &1903289754
 GameObject:
   m_ObjectHideFlags: 0
