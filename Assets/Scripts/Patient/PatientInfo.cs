@@ -10,8 +10,7 @@ public class PatientInfo {
 
     public string lastName;
     public string firstName;
-    public string middleName;
-    public int age;
+    public string age;
     public string patientID;
 
 }

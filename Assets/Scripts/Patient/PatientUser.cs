@@ -5,6 +5,7 @@ using UnityEngine;
 public class PatientUser : MonoBehaviour
 {
     public PatientInfo myInfo;
+    
     // Start is called before the first frame update
     void Start()
     {
