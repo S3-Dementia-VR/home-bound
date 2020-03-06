@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 public class SaveManager : MonoBehaviour
 {
-    public string filename;
+    public string _patientID;
     private PatientUser _patient;
 
     private void Awake()
@@ -77,12 +77,14 @@ public class SaveManager : MonoBehaviour
             file.Close();
         }
         
-        Debug.Log("Save done - " + Application.persistentDataPath);
-        Debug.Log(_patient.myInfo.patientID);
+        Debug.Log("Save done - " + _patient.myInfo.patientID);
     }
 
     public void Load() {
-        FileStream file = new FileStream(Application.persistentDataPath + "/save.dat", FileMode.Open);
+        string folder = Path.Combine(Application.persistentDataPath, "saves");
+        folder = Path.Combine(folder, _patientID);
+
+        FileStream file = new FileStream(folder + "/save.dat", FileMode.Open);
         try
         {
             BinaryFormatter formatter = new BinaryFormatter();
@@ -96,5 +98,31 @@ public class SaveManager : MonoBehaviour
         {
             file.Close();
         }
+
+        Debug.Log("Load done - " + _patient.myInfo.patientID);
+    }
+
+    public PatientInfo LoadInfo(string patientID) {
+        string folder = Path.Combine(Application.persistentDataPath, "saves");
+        folder = Path.Combine(folder, patientID);
+
+        FileStream file = new FileStream(folder + "/save.dat", FileMode.Open);
+        try
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            _patient.myInfo = formatter.Deserialize(file) as PatientInfo;
+        }
+        catch (SerializationException e)
+        {
+            Debug.LogError("Issue with deserializing data: " + e.Message);
+        }
+        finally
+        {
+            file.Close();
+        }
+
+        Debug.Log("Load done - " + _patient.myInfo.patientID);
+
+        return _patient.myInfo;
     }
 }

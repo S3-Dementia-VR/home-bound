@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class ProfileManager : MonoBehaviour
@@ -23,13 +24,20 @@ public class ProfileManager : MonoBehaviour
 
     void Start() {
 
-        //setContent Holder Height;
-        content.sizeDelta = new Vector2(0, 3 * 60);
+        // Path where the saves are stored
+        string folder = Path.Combine(Application.persistentDataPath, "saves");
 
-        for (int i = 0; i < 5; i++)
+        // Get list of saves
+        string[] dir = Directory.GetDirectories(folder);
+        int total_saves = dir.Length;
+
+        //setContent Holder Height;
+        content.sizeDelta = new Vector2(0, total_saves * 65);
+
+        for (int i = 0; i < total_saves; i++)
         {
             // 60 width of item
-            float spawnY = i * 70;
+            float spawnY = i * 65;
             //newSpawn Position
             Vector3 pos = new Vector3(SpawnPoint.position.x, -spawnY, SpawnPoint.position.z);
             //instantiate item
@@ -38,11 +46,13 @@ public class ProfileManager : MonoBehaviour
             SpawnedItem.transform.SetParent(SpawnPoint, false);
             //get PatientInfo Component
             ProfileInfo profileInfo = SpawnedItem.GetComponent<ProfileInfo>();
-            //set lastName
-            profileInfo.age.text = itemNames[i];
 
-            // go through list of files
-            // for each file create the button
+            PatientInfo info = GameObject.Find("SaveManager").GetComponent<SaveManager>().LoadInfo(dir[i]);
+
+            //set button contents
+            profileInfo.lastName.text = info.lastName;
+            profileInfo.age.text = info.age;
+            profileInfo.patientID.text = info.patientID;
         }
     }
 

@@ -11,4 +11,8 @@ public class LoadScene : MonoBehaviour
     public void OnMouseClick() {
         SceneManager.LoadScene(sceneName);
     }
+
+    public void CloseGame() {
+        Application.Quit();
+    }
 }
