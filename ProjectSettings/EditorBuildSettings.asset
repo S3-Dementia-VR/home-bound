@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/add_new_profile.unity
     guid: c10462d5795ffb447a8bdc67fc5651a1
+  - enabled: 1
+    path: Assets/Scenes/personalization.unity
+    guid: 190a166342a32734a95266e704076db1
+  - enabled: 1
+    path: Assets/Scenes/user_profile.unity
+    guid: bd7ce392e27b1b24986ee7f018e8dd05
   m_configObjects: {}
