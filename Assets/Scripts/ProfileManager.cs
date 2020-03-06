@@ -51,6 +51,7 @@ public class ProfileManager : MonoBehaviour
 
             //set button contents
             profileInfo.lastName.text = info.lastName;
+            profileInfo.firstName.text = info.firstName;
             profileInfo.age.text = info.age;
             profileInfo.patientID.text = info.patientID;
         }
