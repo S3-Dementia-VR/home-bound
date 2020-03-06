@@ -32,14 +32,14 @@ public class ProfileManager : MonoBehaviour
         int total_saves = dir.Length;
 
         //setContent Holder Height;
-        content.sizeDelta = new Vector2(0, total_saves * 65);
+        content.sizeDelta = new Vector2(0, total_saves * 70);
 
         for (int i = 0; i < total_saves; i++)
         {
             // 60 width of item
-            float spawnY = i * 65;
+            float spawnY = i * 70;
             //newSpawn Position
-            Vector3 pos = new Vector3(SpawnPoint.position.x, -spawnY, SpawnPoint.position.z);
+            Vector3 pos = new Vector3(5, -spawnY, SpawnPoint.position.z);
             //instantiate item
             GameObject SpawnedItem = Instantiate(profileButtonItem, pos, SpawnPoint.rotation);
             //setParent
