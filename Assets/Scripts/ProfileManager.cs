@@ -5,10 +5,8 @@ using UnityEngine;
 
 public class ProfileManager : MonoBehaviour
 {
-    public GameObject userProfilePrefab;
-
     [SerializeField]
-    private List<ProfileInfo> profileInfo;
+    private List<ProfileButtonsInfo> profileInfo;
 
 
     [SerializeField]
@@ -19,8 +17,6 @@ public class ProfileManager : MonoBehaviour
 
     [SerializeField]
     private RectTransform content = null;
-
-    public string[] itemNames = null;
 
     void Start() {
 
@@ -45,7 +41,7 @@ public class ProfileManager : MonoBehaviour
             //setParent
             SpawnedItem.transform.SetParent(SpawnPoint, false);
             //get PatientInfo Component
-            ProfileInfo profileInfo = SpawnedItem.GetComponent<ProfileInfo>();
+            ProfileButtonsInfo profileInfo = SpawnedItem.GetComponent<ProfileButtonsInfo>();
 
             PatientInfo info = GameObject.Find("SaveManager").GetComponent<SaveManager>().LoadInfo(dir[i]);
 
@@ -55,11 +51,5 @@ public class ProfileManager : MonoBehaviour
             profileInfo.age.text = info.age;
             profileInfo.patientID.text = info.patientID;
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

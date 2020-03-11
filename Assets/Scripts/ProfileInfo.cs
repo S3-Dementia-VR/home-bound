@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class ProfileInfo : MonoBehaviour
 {
@@ -11,28 +10,14 @@ public class ProfileInfo : MonoBehaviour
     public Text age = null;
     public Text patientID = null;
 
-    private Button myselfButton;
-
-    void Start()
+    private void Start()
     {
-        myselfButton = GetComponent<Button>();
-        myselfButton.onClick.AddListener(() => selectProfile());
+        GameObject currentUser = GameObject.Find("CurrentUser");
+        PatientInfo patientInfo = currentUser.GetComponent<PatientUser>().myInfo;
+
+        lastName.text = patientInfo.lastName;
+        firstName.text = patientInfo.firstName;
+        age.text = patientInfo.age;
+        patientID.text = patientInfo.patientID;
     }
-
-    public void selectProfile()
-    {
-        Debug.Log("Loading Profile triggered - " + patientID.text);
-
-        PatientUser currentUser = GameObject.Find("CurrentUser").GetComponent<PatientUser>();
-        currentUser.myInfo = GameObject.Find("SaveManager").GetComponent<SaveManager>().LoadInfo(patientID.text);
-
-        DontDestroyOnLoad(currentUser);
-    }
-
-    void Destroy()
-    {
-        Debug.Log("Button Destroyed - " + patientID.text);
-        myselfButton.onClick.RemoveListener(() => selectProfile());
-    }
-
 }
