@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ProfileManager : MonoBehaviour
 {
+    // Use these for main_menu - showing list of profiles
     [SerializeField]
     private List<ProfileButtonsInfo> profileInfo;
-
 
     [SerializeField]
     private Transform SpawnPoint = null;
@@ -17,9 +19,26 @@ public class ProfileManager : MonoBehaviour
 
     [SerializeField]
     private RectTransform content = null;
+    // end
 
     void Start() {
+        // Create a temporary reference to the current scene.
+        Scene currentScene = SceneManager.GetActiveScene();
 
+        // Retrieve the name of this scene.
+        string sceneName = currentScene.name;
+
+        if (sceneName == "main_menu")
+        {
+            this.showProfileList();
+        } else if (sceneName == "edit_profile")
+        {
+            this.showProfileEditForm();
+        }
+    }
+
+    public void showProfileList()
+    {
         // Path where the saves are stored
         string folder = Path.Combine(Application.persistentDataPath, "saves");
 
@@ -51,5 +70,23 @@ public class ProfileManager : MonoBehaviour
             profileInfo.age.text = info.age;
             profileInfo.patientID.text = info.patientID;
         }
+    }
+
+    public void showProfileEditForm()
+    {
+        GameObject profileForm = GameObject.Find("Edit Profile Form");
+        GameObject currentUser = GameObject.Find("CurrentUser");
+        PatientInfo patientInfo = currentUser.GetComponent<PatientUser>().myInfo;
+
+        // put data into the form
+        InputField lastName = profileForm.transform.Find("LastName/Input").gameObject.GetComponent<InputField>();
+        InputField firstName = profileForm.transform.Find("FirstName/Input").gameObject.GetComponent<InputField>();
+        InputField age = profileForm.transform.Find("Age/Input").gameObject.GetComponent<InputField>();
+        Text patientID = GameObject.Find("PatientID/Text").GetComponent<Text>();
+
+        lastName.text = patientInfo.lastName;
+        firstName.text = patientInfo.firstName;
+        age.text = patientInfo.age;
+        patientID.text = patientInfo.patientID;
     }
 }

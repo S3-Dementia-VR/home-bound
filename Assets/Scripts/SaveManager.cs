@@ -46,6 +46,32 @@ public class SaveManager : MonoBehaviour
         //Debug.Log(patientID);
     }
 
+    public PatientInfo SaveEditedProfile()
+    {
+        GameObject profileForm = GameObject.Find("Edit Profile Form");
+
+        // get data from form
+        InputField lastName = profileForm.transform.Find("LastName/Input").gameObject.GetComponent<InputField>();
+        InputField firstName = profileForm.transform.Find("FirstName/Input").gameObject.GetComponent<InputField>();
+        InputField age = profileForm.transform.Find("Age/Input").gameObject.GetComponent<InputField>();
+
+        string patientID = GameObject.Find("PatientID/Text").GetComponent<Text>().text;
+
+        PatientInfo patientInfo = new PatientInfo();
+
+        patientInfo.lastName = lastName.text;
+        patientInfo.firstName = firstName.text;
+        patientInfo.age = age.text;
+        patientInfo.patientID = patientID;
+
+        _patient = gameObject.AddComponent(typeof(PatientUser)) as PatientUser;
+        _patient.myInfo = patientInfo;
+
+        Save();
+
+        return _patient.myInfo;
+    }
+
     public void Save() {
 
         // Create/Open the file where we save to
@@ -125,4 +151,6 @@ public class SaveManager : MonoBehaviour
 
         return _patient.myInfo;
     }
+
+    //function for returning pictures in folder
 }

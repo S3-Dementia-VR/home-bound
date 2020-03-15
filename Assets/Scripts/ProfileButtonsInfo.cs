@@ -24,8 +24,10 @@ public class ProfileButtonsInfo : MonoBehaviour
         Debug.Log("Loading Profile triggered - " + patientID.text);
 
         PatientUser currentUser = GameObject.Find("CurrentUser").GetComponent<PatientUser>();
-        currentUser.myInfo = GameObject.Find("SaveManager").GetComponent<SaveManager>().LoadInfo(patientID.text);
+        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        currentUser.myInfo = saveManager.LoadInfo(patientID.text);
 
+        DontDestroyOnLoad(saveManager);
         DontDestroyOnLoad(currentUser);
     }
 

@@ -15,4 +15,12 @@ public class LoadScene : MonoBehaviour
     public void CloseGame() {
         Application.Quit();
     }
+
+    public void SaveProfile()
+    {
+        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        PatientUser currentUser = GameObject.Find("CurrentUser").GetComponent<PatientUser>();
+
+        currentUser.myInfo = saveManager.SaveEditedProfile();
+    }
 }
