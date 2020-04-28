@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -9,8 +8,6 @@ public class PersonalizationManager : MonoBehaviour
 {
     Vector3[] pos;
     //public GameObject[] obj;
-
-    public Text folderLocation;
 
     [SerializeField]
     private Transform SpawnPoint = null;
@@ -32,17 +29,19 @@ public class PersonalizationManager : MonoBehaviour
         string folder = Path.Combine(Application.persistentDataPath, "saves");
         folder = Path.Combine(folder, patientInfo.patientID);
 
-        // Display location of image files
-        folderLocation.text = folder;
 
-        // Find all pictures in the folder
-        var filters = new String[] { "jpg", "jpeg", "png" };
-        var files = GetFilesFrom(folder, filters, false);
+        /*
+        
+        */
 
-        // Display images in a grid
-        for (int i = 0; i < files.Length; i++)
+
+        folder = Path.Combine(folder, "map.png");
+        //Find all the images
+        Texture2D tex = LoadPNG(folder);
+
+        //Display images in idk a grid ??
+        for (int i = 0; i < 4; i++)
         {
-            Texture2D tex = LoadPNG(files[i]);
             //pos = new Vector3[obj.Length];
 
             // width of image prefab
@@ -85,17 +84,5 @@ public class PersonalizationManager : MonoBehaviour
             tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
         }
         return tex;
-    }
-
-    public static String[] GetFilesFrom(String searchFolder, String[] filters, bool isRecursive)
-    {
-        List<String> filesFound = new List<String>();
-        var searchOption = isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-        foreach (var filter in filters)
-        {
-            filesFound.AddRange(Directory.GetFiles(searchFolder, String.Format("*.{0}", filter), searchOption));
-
-        }
-        return filesFound.ToArray();
     }
 }
