@@ -54,7 +54,8 @@ public class ProfileManager : MonoBehaviour
             // 60 width of item
             float spawnY = i * 70;
             //newSpawn Position
-            Vector3 pos = new Vector3(5, -spawnY, SpawnPoint.position.z);
+            //Vector3 pos = new Vector3(5, -spawnY, SpawnPoint.position.z);
+            Vector3 pos = new Vector3(0, 0, 0);
             //instantiate item
             GameObject SpawnedItem = Instantiate(profileButtonItem, pos, SpawnPoint.rotation);
             //setParent
