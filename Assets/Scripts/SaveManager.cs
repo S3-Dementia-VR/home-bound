@@ -15,7 +15,7 @@ public class SaveManager : MonoBehaviour
     private void Awake()
     {
         _patient = GameObject.FindObjectOfType<PatientUser>();
-        Debug.Log("Awake - " + _patient);
+        Debug.Log("Current Patient - " + _patient.myInfo.patientID);
         //Save();
     }
 
@@ -152,5 +152,15 @@ public class SaveManager : MonoBehaviour
         return _patient.myInfo;
     }
 
-    //function for returning pictures in folder
+    public void DeleteSave()
+    {
+        string folder = Path.Combine(Application.persistentDataPath, "saves");
+        folder = Path.Combine(folder, _patient.myInfo.patientID);
+
+        Debug.Log("Deleting - "+ folder);
+        if (Directory.Exists(folder))
+        {
+            Directory.Delete(folder, true);
+        }
+    }
 }
