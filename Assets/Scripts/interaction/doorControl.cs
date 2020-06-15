@@ -7,6 +7,8 @@ public class doorControl : MonoBehaviour
     public Animator anim;
     public Transform door;
     public Transform fps;
+    public AudioSource opensfx;
+    public AudioSource closesfx;
     private Vector3 offset = new Vector3(0,0,0);
     private Vector3 minus5 = new Vector3(0,0,-5);
 
@@ -19,11 +21,13 @@ public class doorControl : MonoBehaviour
         if (Vector3.Distance(door.position+offset, fps.position) <= 20) {
             if (Input.GetButtonDown("Interact")) {
                 if(anim.GetBool("open") == false) {
+                    opensfx.Play();
                     anim.Play("Door_open");
                     anim.SetBool("open", true);
                     offset += minus5;
                 }
                 else {
+                    closesfx.Play();
                     anim.Play("Door_Close");
                     anim.SetBool("open", false);
                     offset -= minus5;
