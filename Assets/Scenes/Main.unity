@@ -401,6 +401,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1349237962}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &106126955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106126954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!4 &106126957 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4406128822785862, guid: c6b698bafc4b05c43a452c3d6dfeb206,
@@ -473,6 +487,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 292033543}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &128565178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128565177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!64 &128565181
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -568,6 +596,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1355570813}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &131840563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131840562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!4 &131840565 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 410450, guid: 77718866f414879468144684f0304c4f,
@@ -1843,6 +1885,10 @@ PrefabInstance:
     - target: {fileID: 400000, guid: a69511a1d0218694094b96929693635e, type: 3}
       propertyPath: m_LocalScale.z
       value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: a69511a1d0218694094b96929693635e, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a69511a1d0218694094b96929693635e, type: 3}
@@ -3591,7 +3637,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 7.45e-43, y: 11.563408, z: 7.45e-43, w: 4.3e-44}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -3796,6 +3842,7 @@ GameObject:
   - component: {fileID: 692841522}
   - component: {fileID: 693808882}
   - component: {fileID: 695742513}
+  - component: {fileID: 695742514}
   m_Layer: 0
   m_Name: chair
   m_TagString: Untagged
@@ -3817,6 +3864,20 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300006, guid: 648250201fabe574b8591ee45cddcf4a, type: 3}
+--- !u!114 &695742514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 695742512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!1 &695742526
 GameObject:
   m_ObjectHideFlags: 0
@@ -4047,7 +4108,8 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 2.4142e-41}
+  m_BoundingSphereOverride: {x: 1.5046328e-36, y: 4.3368087e-19, z: 2.524355e-29,
+    w: 4.1683693}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -8711,6 +8773,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 607404698}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1624634849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624634848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!4 &1624634851 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4406128822785862, guid: c6b698bafc4b05c43a452c3d6dfeb206,
@@ -8949,7 +9025,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: NaN, z: 3.6e-43, w: 5.499428}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -9963,7 +10039,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 7.45e-43, y: 11.563408, z: 7.45e-43, w: 4.3e-44}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -10630,7 +10706,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 3.642e-42, w: 2.2527e-41}
+  m_BoundingSphereOverride: {x: 0, y: 923264, z: 2.7938733e+20, w: 2.7722101e+20}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -10640,6 +10716,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1034641989}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1955004377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955004376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!64 &1955004380
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10700,6 +10790,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 815095766}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1968572484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968572483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!4 &1968572486 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 9fc4c8f6a8a94ae468c72a5193c93ea5,
@@ -11105,6 +11209,20 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 889999297}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2082764481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2082764480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!4 &2082764483 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4406128822785862, guid: c6b698bafc4b05c43a452c3d6dfeb206,
@@ -12755,6 +12873,7 @@ GameObject:
   - component: {fileID: 8139507399288066787}
   - component: {fileID: 4132787330099860506}
   - component: {fileID: 3572985944737181902}
+  - component: {fileID: 3572985944737181903}
   m_Layer: 0
   m_Name: Object068
   m_TagString: Untagged
@@ -12776,6 +12895,20 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2561127810642175325, guid: 5eff195849eee41c28a7a88c37302b6c, type: 3}
+--- !u!114 &3572985944737181903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3572985944737181901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!23 &3649094271705049808
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -13538,6 +13671,7 @@ GameObject:
   - component: {fileID: 5751729509687095564}
   - component: {fileID: 1788224781152026929}
   - component: {fileID: 5385834666438061636}
+  - component: {fileID: 5385834666438061637}
   m_Layer: 0
   m_Name: Object047
   m_TagString: Untagged
@@ -13559,6 +13693,20 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7858766198223003207, guid: 5eff195849eee41c28a7a88c37302b6c, type: 3}
+--- !u!114 &5385834666438061637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5385834666438061635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!33 &5444152669804016731
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -14744,6 +14892,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5006512736564270673}
+  - component: {fileID: 8296172667438310467}
   m_Layer: 0
   m_Name: rocking-chair
   m_TagString: Untagged
@@ -14751,6 +14900,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8296172667438310467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8296172667438310466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704fc9adc82d0354fb45bb0a930d4ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: {fileID: 0}
+  chairT: {fileID: 0}
 --- !u!4 &8357357494951571194
 Transform:
   m_ObjectHideFlags: 0
