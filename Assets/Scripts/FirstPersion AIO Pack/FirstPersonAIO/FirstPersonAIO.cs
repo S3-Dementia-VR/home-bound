@@ -834,12 +834,12 @@ public class BETA_SETTINGS{
             t.playerCanMove = EditorGUILayout.ToggleLeft(new GUIContent("Enable Player Movement","Determines if the player is allowed to move."),t.playerCanMove);
             GUI.enabled = t.playerCanMove;
             t.walkByDefault = EditorGUILayout.ToggleLeft(new GUIContent("Walk By Default","Determines if the default mode of movement is 'Walk' or 'Srpint'."),t.walkByDefault);
-            t.walkSpeed = EditorGUILayout.Slider(new GUIContent("Walk Speed","Determines how fast the player walks."),t.walkSpeed,0.1f,10);
+            t.walkSpeed = EditorGUILayout.Slider(new GUIContent("Walk Speed","Determines how fast the player walks."),t.walkSpeed,0.1f,25);
             t.sprintKey = (KeyCode)EditorGUILayout.EnumPopup(new GUIContent("Sprint Key","Determines what key needs to be pressed to enter a sprint"),t.sprintKey);
-            t.sprintSpeed = EditorGUILayout.Slider(new GUIContent("Sprint Speed","Determines how fast the player sprints."),t.sprintSpeed,0.1f,20);
+            t.sprintSpeed = EditorGUILayout.Slider(new GUIContent("Sprint Speed","Determines how fast the player sprints."),t.sprintSpeed,0.1f,40);
             t.canJump = EditorGUILayout.ToggleLeft(new GUIContent("Can Player Jump?","Determines if the player is allowed to jump."),t.canJump);
             GUI.enabled = t.playerCanMove && t.canJump; EditorGUI.indentLevel++;
-            t.jumpPower = EditorGUILayout.Slider(new GUIContent("Jump Power","Determines how high the player can jump."),t.jumpPower,0.1f,15);
+            t.jumpPower = EditorGUILayout.Slider(new GUIContent("Jump Power","Determines how high the player can jump."),t.jumpPower,0.1f,20);
             t.canHoldJump = EditorGUILayout.ToggleLeft(new GUIContent("Hold Jump","Determines if the jump button needs to be pressed down to jump, or if the player can hold the jump button to automaticly jump every time the it hits the ground."),t.canHoldJump);
             EditorGUI.indentLevel --;GUI.enabled = t.playerCanMove;
             EditorGUILayout.Space();
@@ -879,7 +879,7 @@ public class BETA_SETTINGS{
                 t.drawStaminaMeter = EditorGUILayout.ToggleLeft(new GUIContent("Draw Stamina Meter","Determines if a basic stamina meter will be generated."),t.drawStaminaMeter);
                 GUI.enabled = t.playerCanMove; EditorGUI.indentLevel --;
                 EditorGUILayout.Space();
-                t.advanced.gravityMultiplier = EditorGUILayout.Slider(new GUIContent("Gravity Multiplier","Determines how much the physics engine's gravitational force is multiplied."),t.advanced.gravityMultiplier,0.1f,5);
+                t.advanced.gravityMultiplier = EditorGUILayout.Slider(new GUIContent("Gravity Multiplier","Determines how much the physics engine's gravitational force is multiplied."),t.advanced.gravityMultiplier,0.1f,25);
                 t.advanced._maxSlopeAngle = EditorGUILayout.Slider(new GUIContent("Max Slope Angle","Determines the maximum angle the player can walk up. If left 0, the slope detection/limiting system will not be used."),t.advanced._maxSlopeAngle,0,70);
                 t.advanced.maxStepHeight = EditorGUILayout.Slider(new GUIContent("Max Step Height","EXPERIMENTAL! Determines if a small ledge is a stair by comparing it to this value. Values over 0.5 produces     odd results."),t.advanced.maxStepHeight,0,1);
             }
