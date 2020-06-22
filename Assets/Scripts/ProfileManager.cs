@@ -37,6 +37,9 @@ public class ProfileManager : MonoBehaviour
         }
     }
 
+    /*
+     * Used in main_menu.unity to display the list of profiles
+     */
     public void showProfileList()
     {
         // Path where the saves are stored
@@ -73,6 +76,10 @@ public class ProfileManager : MonoBehaviour
         }
     }
 
+    /*
+     * Used in edit_profile.unity 
+     * Shows the current information of the selected profile in the edit form
+     */
     public void showProfileEditForm()
     {
         GameObject profileForm = GameObject.Find("Edit Profile Form");

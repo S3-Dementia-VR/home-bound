@@ -19,6 +19,10 @@ public class SaveManager : MonoBehaviour
         //Save();
     }
 
+    /*
+     * called in add_new_profile.unity
+     * takes form data and generates a patient ID
+     */
     public void CreateNewSave()
     {
         GameObject profileForm = GameObject.Find("New Profile Form");
@@ -46,6 +50,10 @@ public class SaveManager : MonoBehaviour
         //Debug.Log(patientID);
     }
 
+    /*
+     * called in edit_profile.unity
+     * takes form data and saves it to the existing save.dat associated to the patient ID
+     */
     public PatientInfo SaveEditedProfile()
     {
         GameObject profileForm = GameObject.Find("Edit Profile Form");
@@ -72,6 +80,7 @@ public class SaveManager : MonoBehaviour
         return _patient.myInfo;
     }
 
+    // Creates the save folder sand save.dat
     public void Save() {
 
         // Create/Open the file where we save to
@@ -106,6 +115,7 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Save done - " + _patient.myInfo.patientID);
     }
 
+    // used to load the PatientInfo stored in save.dat
     public void Load() {
         string folder = Path.Combine(Application.persistentDataPath, "saves");
         folder = Path.Combine(folder, _patientID);
@@ -128,6 +138,11 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Load done - " + _patient.myInfo.patientID);
     }
 
+    /*
+     * Used in main_menu.unity (called by ProfileManager.cs)
+     * Does the same as Load(), but takes in a patientID input
+     * and explicitly returns a PatientInfo object
+     */
     public PatientInfo LoadInfo(string patientID) {
         string folder = Path.Combine(Application.persistentDataPath, "saves");
         folder = Path.Combine(folder, patientID);
@@ -152,6 +167,10 @@ public class SaveManager : MonoBehaviour
         return _patient.myInfo;
     }
 
+    /*
+     * can be called in user_profile.unity
+     * used to delete the save folder and its contents
+     */
     public void DeleteSave()
     {
         string folder = Path.Combine(Application.persistentDataPath, "saves");
