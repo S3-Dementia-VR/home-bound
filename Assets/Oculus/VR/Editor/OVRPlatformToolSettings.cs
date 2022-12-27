@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ *
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -29,14 +49,6 @@ namespace Assets.Oculus.VR.Editor
 			// Stop running Update
 			EditorApplication.update -= Update;
 		}
-
-		public enum GamepadType
-		{
-			OFF,
-			TWINSTICK,
-			RIGHT_D_PAD,
-			LEFT_D_PAD,
-		};
 
 		public static string AppID
 		{
@@ -309,17 +321,17 @@ namespace Assets.Oculus.VR.Editor
 			}
 		}
 
-		public static GamepadType RiftGamepadEmulation
+		public static OVRPlatformTool.GamepadType RiftGamepadEmulation
 		{
 			get
 			{
 				if (EditorPrefs.HasKey("OVRPlatformToolSettings_RiftGamepadEmulation"))
 				{
-					return (GamepadType)EditorPrefs.GetInt("OVRPlatformToolSettings_RiftGamepadEmulation");
+					return (OVRPlatformTool.GamepadType)EditorPrefs.GetInt("OVRPlatformToolSettings_RiftGamepadEmulation");
 				}
 				else
 				{
-					return GamepadType.OFF;
+					return OVRPlatformTool.GamepadType.OFF;
 				}
 			}
 			set
@@ -367,10 +379,80 @@ namespace Assets.Oculus.VR.Editor
 			set { Instance.runOvrLint = value; }
 		}
 
-		public static bool SkipUnneededShaders
+		public static bool UploadDebugSymbols
 		{
-			get { return Instance.skipUnneededShaders; }
-			set { Instance.skipUnneededShaders = value; }
+			get
+			{
+				if (EditorPrefs.HasKey("OVRPlatformToolSettings_UploadDebugSymbols"))
+				{
+					return EditorPrefs.GetBool("OVRPlatformToolSettings_UploadDebugSymbols");
+				}
+				else
+				{
+					return true;
+				}
+			}
+			set
+			{
+				EditorPrefs.SetBool("OVRPlatformToolSettings_UploadDebugSymbols", value);
+			}
+		}
+
+		public static string DebugSymbolsDirectory
+		{
+			get
+			{
+				if (EditorPrefs.HasKey("OVRPlatformToolSettings_DebugSymbolsDirectory"))
+				{
+					return EditorPrefs.GetString("OVRPlatformToolSettings_DebugSymbolsDirectory");
+				}
+				else
+				{
+					return "";
+				}
+			}
+			set
+			{
+				EditorPrefs.SetString("OVRPlatformToolSettings_DebugSymbolsDirectory", value);
+			}
+		}
+
+		public static bool UploadDebugSymbolsOnly
+		{
+			get
+			{
+				if (EditorPrefs.HasKey("OVRPlatformToolSettings_UploadDebugSymbolsOnly"))
+				{
+					return EditorPrefs.GetBool("OVRPlatformToolSettings_UploadDebugSymbolsOnly");
+				}
+				else
+				{
+					return false;
+				}
+			}
+			set
+			{
+				EditorPrefs.SetBool("OVRPlatformToolSettings_UploadDebugSymbolsOnly", value);
+			}
+		}
+
+		public static string BuildID
+		{
+			get
+			{
+				if (EditorPrefs.HasKey("OVRPlatformToolSettings_BuildID"))
+				{
+					return EditorPrefs.GetString("OVRPlatformToolSettings_BuildID");
+				}
+				else
+				{
+					return "";
+				}
+			}
+			set
+			{
+				EditorPrefs.SetString("OVRPlatformToolSettings_BuildID", value);
+			}
 		}
 
 		[SerializeField]
@@ -387,9 +469,6 @@ namespace Assets.Oculus.VR.Editor
 
 		[SerializeField]
 		private bool runOvrLint = true;
-
-		[SerializeField]
-		private bool skipUnneededShaders = false;
 
 		public static bool TryInitialize()
 		{

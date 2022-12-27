@@ -1,27 +1,37 @@
-/************************************************************************************
-Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
-
-Licensed under the Oculus Utilities SDK License Version 1.31 (the "License"); you may not use
-the Utilities SDK except in compliance with the License, which is provided at the time of installation
-or download, or which otherwise accompanies this software in either electronic or hard copy form.
-
-You may obtain a copy of the License at
-https://developer.oculus.com/licenses/utilities-1.31
-
-Unless required by applicable law or agreed to in writing, the Utilities SDK distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-ANY KIND, either express or implied. See the License for the specific language governing
-permissions and limitations under the License.
-************************************************************************************/
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ *
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #if UNITY_ANDROID && !UNITY_EDITOR
 #define OVR_ANDROID_MRC
 #endif
 
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
+
+#if USING_URP
+using UnityEngine.Rendering.Universal;
+#endif
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_ANDROID
 
@@ -33,7 +43,10 @@ public class OVRExternalComposition : OVRComposition
 	public GameObject backgroundCameraGameObject = null;
 	public Camera backgroundCamera = null;
 #if OVR_ANDROID_MRC
-	public bool renderCombinedFrame = true;
+	private bool skipFrame = false;
+	private float fpsThreshold = 80.0f;
+	private bool isFrameSkipped = true;
+	public bool renderCombinedFrame = false;
 	public AudioListener audioListener;
 	public OVRMRAudioFilter audioFilter;
 	public RenderTexture[] mrcRenderTextureArray = new RenderTexture[2];
@@ -42,20 +55,19 @@ public class OVRExternalComposition : OVRComposition
 
 	// when rendererSupportsCameraRect is false, mrcRenderTextureArray would only store the background frame (regular width)
 	public RenderTexture[] mrcForegroundRenderTextureArray = new RenderTexture[2];
+
+	// this is used for moving MRC camera where we would need to be able to synchronize the camera position from the game with that on the client for composition
+	public double[] cameraPoseTimeArray = new double[2];
 #endif
 
 	public override OVRManager.CompositionMethod CompositionMethod() { return OVRManager.CompositionMethod.External; }
 
-	public OVRExternalComposition(GameObject parentObject, Camera mainCamera)
-		: base(parentObject, mainCamera)
+	public OVRExternalComposition(GameObject parentObject, Camera mainCamera, OVRMixedRealityCaptureConfiguration configuration)
+		: base(parentObject, mainCamera, configuration)
 	{
+
 #if OVR_ANDROID_MRC
-		renderCombinedFrame = true;
-		if (GraphicsSettings.renderPipelineAsset != null)
-		{
-			Debug.Log("[OVRExternalComposition] scriptable rendering pipeline detected, Camera.rect is not supported");
-			renderCombinedFrame = false;
-		}
+		renderCombinedFrame = false;
 
 		int frameWidth;
 		int frameHeight;
@@ -65,8 +77,11 @@ public class OVRExternalComposition : OVRComposition
 		{
 			mrcRenderTextureArray[i] = new RenderTexture(renderCombinedFrame ? frameWidth : frameWidth/2, frameHeight, 24, RenderTextureFormat.ARGB32);
 			mrcRenderTextureArray[i].Create();
+			cameraPoseTimeArray[i] = 0.0;
 		}
 
+		skipFrame = OVRManager.display.displayFrequency > fpsThreshold;
+		OVRManager.DisplayRefreshRateChanged += DisplayRefreshRateChanged;
 		frameIndex = 0;
 		lastMrcEncodeFrameSyncId = -1;
 
@@ -80,10 +95,10 @@ public class OVRExternalComposition : OVRComposition
 			}
 		}
 #endif
-		RefreshCameraObjects(parentObject, mainCamera);
+		RefreshCameraObjects(parentObject, mainCamera, configuration);
 	}
 
-	private void RefreshCameraObjects(GameObject parentObject, Camera mainCamera)
+	private void RefreshCameraObjects(GameObject parentObject, Camera mainCamera, OVRMixedRealityCaptureConfiguration configuration)
 	{
 		if (mainCamera.gameObject != previousMainCameraObject)
 		{
@@ -97,23 +112,41 @@ public class OVRExternalComposition : OVRComposition
 			RefreshCameraRig(parentObject, mainCamera);
 
 			Debug.Assert(backgroundCameraGameObject == null);
-			backgroundCameraGameObject = Object.Instantiate(mainCamera.gameObject);
-			backgroundCameraGameObject.name = "OculusMRC_BackgroundCamera";
-			backgroundCameraGameObject.transform.parent = cameraInTrackingSpace ? cameraRig.trackingSpace : parentObject.transform;
-			if (backgroundCameraGameObject.GetComponent<AudioListener>())
+			if (configuration.instantiateMixedRealityCameraGameObject != null)
 			{
+				backgroundCameraGameObject = configuration.instantiateMixedRealityCameraGameObject(mainCamera.gameObject, OVRManager.MrcCameraType.Background);
+			}
+			else
+			{
+				backgroundCameraGameObject = Object.Instantiate(mainCamera.gameObject);
+			}
+
+			backgroundCameraGameObject.name = "OculusMRC_BackgroundCamera";
+			backgroundCameraGameObject.transform.parent =
+				cameraInTrackingSpace ? cameraRig.trackingSpace : parentObject.transform;
+			if (backgroundCameraGameObject.GetComponent<AudioListener>()) {
 				Object.Destroy(backgroundCameraGameObject.GetComponent<AudioListener>());
 			}
-			if (backgroundCameraGameObject.GetComponent<OVRManager>())
-			{
+
+			if (backgroundCameraGameObject.GetComponent<OVRManager>()) {
 				Object.Destroy(backgroundCameraGameObject.GetComponent<OVRManager>());
 			}
 			backgroundCamera = backgroundCameraGameObject.GetComponent<Camera>();
 			backgroundCamera.tag = "Untagged";
+#if USING_MRC_COMPATIBLE_URP_VERSION
+			var backgroundCamData = backgroundCamera.GetUniversalAdditionalCameraData();
+			if (backgroundCamData != null)
+			{
+				backgroundCamData.allowXRRendering = false;
+			}
+#elif USING_URP
+			Debug.LogError("Using URP with MRC is only supported with URP version 10.0.0 or higher. Consider using Unity 2020 or higher.");
+#else
 			backgroundCamera.stereoTargetEye = StereoTargetEyeMask.None;
+#endif
 			backgroundCamera.depth = 99990.0f;
 			backgroundCamera.rect = new Rect(0.0f, 0.0f, 0.5f, 1.0f);
-			backgroundCamera.cullingMask = mainCamera.cullingMask & (~OVRManager.instance.extraHiddenLayers);
+			backgroundCamera.cullingMask = (backgroundCamera.cullingMask & ~configuration.extraHiddenLayers) | configuration.extraVisibleLayers;
 #if OVR_ANDROID_MRC
 			backgroundCamera.targetTexture = mrcRenderTextureArray[0];
 			if (!renderCombinedFrame)
@@ -123,7 +156,15 @@ public class OVRExternalComposition : OVRComposition
 #endif
 
 			Debug.Assert(foregroundCameraGameObject == null);
-			foregroundCameraGameObject = Object.Instantiate(mainCamera.gameObject);
+			if (configuration.instantiateMixedRealityCameraGameObject != null)
+			{
+				foregroundCameraGameObject = configuration.instantiateMixedRealityCameraGameObject(mainCamera.gameObject, OVRManager.MrcCameraType.Foreground);
+			}
+			else
+			{
+				foregroundCameraGameObject = Object.Instantiate(mainCamera.gameObject);
+			}
+
 			foregroundCameraGameObject.name = "OculusMRC_ForgroundCamera";
 			foregroundCameraGameObject.transform.parent = cameraInTrackingSpace ? cameraRig.trackingSpace : parentObject.transform;
 			if (foregroundCameraGameObject.GetComponent<AudioListener>())
@@ -136,16 +177,27 @@ public class OVRExternalComposition : OVRComposition
 			}
 			foregroundCamera = foregroundCameraGameObject.GetComponent<Camera>();
 			foregroundCamera.tag = "Untagged";
+#if USING_MRC_COMPATIBLE_URP_VERSION
+			var foregroundCamData = foregroundCamera.GetUniversalAdditionalCameraData();
+			if (foregroundCamData != null)
+			{
+				foregroundCamData.allowXRRendering = false;
+			}
+#elif USING_URP
+			Debug.LogError("Using URP with MRC is only supported with URP version 10.0.0 or higher. Consider using Unity 2020 or higher.");
+#else
 			foregroundCamera.stereoTargetEye = StereoTargetEyeMask.None;
+#endif
 			foregroundCamera.depth = backgroundCamera.depth + 1.0f;     // enforce the forground be rendered after the background
 			foregroundCamera.rect = new Rect(0.5f, 0.0f, 0.5f, 1.0f);
 			foregroundCamera.clearFlags = CameraClearFlags.Color;
 #if OVR_ANDROID_MRC
-			foregroundCamera.backgroundColor = OVRManager.instance.externalCompositionBackdropColorQuest;
+			foregroundCamera.backgroundColor = configuration.externalCompositionBackdropColorQuest;
 #else
-			foregroundCamera.backgroundColor = OVRManager.instance.externalCompositionBackdropColorRift;
+			foregroundCamera.backgroundColor = configuration.externalCompositionBackdropColorRift;
 #endif
-			foregroundCamera.cullingMask = mainCamera.cullingMask & (~OVRManager.instance.extraHiddenLayers);
+			foregroundCamera.cullingMask = (foregroundCamera.cullingMask & ~configuration.extraHiddenLayers) | configuration.extraVisibleLayers;
+
 #if OVR_ANDROID_MRC
 			if (renderCombinedFrame)
 			{
@@ -163,23 +215,36 @@ public class OVRExternalComposition : OVRComposition
 	}
 
 #if OVR_ANDROID_MRC
-	private void RefreshAudioFilter()
+	private void RefreshAudioFilter(Camera mainCamera)
 	{
-		if (cameraRig != null && (audioListener == null || !audioListener.enabled || !audioListener.gameObject.activeInHierarchy))
+		if (audioListener == null || !audioListener.enabled || !audioListener.gameObject.activeInHierarchy)
 		{
 			CleanupAudioFilter();
 
-			AudioListener tmpAudioListener = cameraRig.centerEyeAnchor.gameObject.activeInHierarchy ? cameraRig.centerEyeAnchor.GetComponent<AudioListener>() : null;
-			if (tmpAudioListener != null && !tmpAudioListener.enabled) tmpAudioListener = null;
-			if (tmpAudioListener == null)
+			// first try cameraRig
+			AudioListener tmpAudioListener = cameraRig != null && cameraRig.centerEyeAnchor.gameObject.activeInHierarchy
+				? cameraRig.centerEyeAnchor.GetComponent<AudioListener>()
+				: null;
+
+			// second try mainCamera
+			if (tmpAudioListener == null || !tmpAudioListener.enabled)
 			{
-				if (Camera.main != null && Camera.main.gameObject.activeInHierarchy)
-				{
-					tmpAudioListener = Camera.main.GetComponent<AudioListener>();
-					if (tmpAudioListener != null && !tmpAudioListener.enabled) tmpAudioListener = null;
-				}
+				tmpAudioListener = mainCamera != null && mainCamera.gameObject.activeInHierarchy
+					? mainCamera.GetComponent<AudioListener>()
+					: null;
 			}
-			if (tmpAudioListener == null)
+
+			// third try Camera.main (expensive)
+			if (tmpAudioListener == null || !tmpAudioListener.enabled)
+			{
+				mainCamera = Camera.main;
+				tmpAudioListener = mainCamera != null && mainCamera.gameObject.activeInHierarchy
+					? mainCamera.GetComponent<AudioListener>()
+					: null;
+			}
+
+			// fourth, search for all AudioListeners (very expensive)
+			if (tmpAudioListener == null || !tmpAudioListener.enabled)
 			{
 				Object[] allListeners = Object.FindObjectsOfType<AudioListener>();
 				foreach (var l in allListeners)
@@ -192,18 +257,14 @@ public class OVRExternalComposition : OVRComposition
 					}
 				}
 			}
-			if (tmpAudioListener == null)
+			if (tmpAudioListener == null || !tmpAudioListener.enabled)
 			{
 				Debug.LogWarning("[OVRExternalComposition] No AudioListener in scene");
 			}
 			else
 			{
 				Debug.LogFormat("[OVRExternalComposition] AudioListener found, obj {0}", tmpAudioListener.gameObject.name);
-			}
-			audioListener = tmpAudioListener;
-			
-			if(audioListener != null)
-			{
+				audioListener = tmpAudioListener;
 				audioFilter = audioListener.gameObject.AddComponent<OVRMRAudioFilter>();
 				audioFilter.composition = this;
 				Debug.LogFormat("OVRMRAudioFilter added");
@@ -226,11 +287,11 @@ public class OVRExternalComposition : OVRComposition
 		{
 			ret = OVRPlugin.Media.EncodeMrcFrame(mrcRenderTextureArray[castTextureIndex].GetNativeTexturePtr(),
 				renderCombinedFrame ? System.IntPtr.Zero : mrcForegroundRenderTextureArray[castTextureIndex].GetNativeTexturePtr(),
-				cachedAudioDataArray, audioFrames, audioChannels, AudioSettings.dspTime, ref syncId);
+				cachedAudioDataArray, audioFrames, audioChannels, AudioSettings.dspTime, cameraPoseTimeArray[castTextureIndex], ref syncId);
 		}
 		else
 		{
-			ret = OVRPlugin.Media.EncodeMrcFrame(mrcRenderTextureArray[castTextureIndex], cachedAudioDataArray, audioFrames, audioChannels, AudioSettings.dspTime, ref syncId);
+			ret = OVRPlugin.Media.EncodeMrcFrame(mrcRenderTextureArray[castTextureIndex], cachedAudioDataArray, audioFrames, audioChannels, AudioSettings.dspTime, cameraPoseTimeArray[castTextureIndex], ref syncId);
 		}
 
 		if (!ret)
@@ -273,14 +334,29 @@ public class OVRExternalComposition : OVRComposition
 #endif
 
 
-	public override void Update(GameObject gameObject, Camera mainCamera)
+	public override void Update(GameObject gameObject, Camera mainCamera, OVRMixedRealityCaptureConfiguration configuration, OVRManager.TrackingOrigin trackingOrigin)
 	{
-		RefreshCameraObjects(gameObject, mainCamera);
+#if OVR_ANDROID_MRC
+		if (skipFrame && OVRPlugin.Media.IsCastingToRemoteClient()) {
+			isFrameSkipped = !isFrameSkipped;
+			if(isFrameSkipped) { return; }
+		}
+#endif
+
+		RefreshCameraObjects(gameObject, mainCamera, configuration);
 
 		OVRPlugin.SetHandNodePoseStateLatency(0.0);     // the HandNodePoseStateLatency doesn't apply to the external composition. Always enforce it to 0.0
 
+		// For third-person camera to use for calculating camera position with different anchors
+		OVRPose stageToLocalPose = OVRPlugin.GetTrackingTransformRelativePose(OVRPlugin.TrackingOrigin.Stage).ToOVRPose();
+		OVRPose localToStagePose = stageToLocalPose.Inverse();
+		OVRPose head = localToStagePose * OVRPlugin.GetNodePose(OVRPlugin.Node.Head, OVRPlugin.Step.Render).ToOVRPose();
+		OVRPose leftC = localToStagePose * OVRPlugin.GetNodePose(OVRPlugin.Node.HandLeft, OVRPlugin.Step.Render).ToOVRPose();
+		OVRPose rightC = localToStagePose * OVRPlugin.GetNodePose(OVRPlugin.Node.HandRight, OVRPlugin.Step.Render).ToOVRPose();
+		OVRPlugin.Media.SetMrcHeadsetControllerPose(head.ToPosef(), leftC.ToPosef(), rightC.ToPosef());
+
 #if OVR_ANDROID_MRC
-		RefreshAudioFilter();
+		RefreshAudioFilter(mainCamera);
 
 		int drawTextureIndex = (frameIndex / 2) % 2;
 		int castTextureIndex = 1 - drawTextureIndex;
@@ -304,11 +380,17 @@ public class OVRExternalComposition : OVRComposition
 
 		backgroundCamera.clearFlags = mainCamera.clearFlags;
 		backgroundCamera.backgroundColor = mainCamera.backgroundColor;
-		backgroundCamera.cullingMask = mainCamera.cullingMask & (~OVRManager.instance.extraHiddenLayers);
+		if (configuration.dynamicCullingMask)
+		{
+			backgroundCamera.cullingMask = (mainCamera.cullingMask & ~configuration.extraHiddenLayers) | configuration.extraVisibleLayers;
+		}
 		backgroundCamera.nearClipPlane = mainCamera.nearClipPlane;
 		backgroundCamera.farClipPlane = mainCamera.farClipPlane;
 
-		foregroundCamera.cullingMask = mainCamera.cullingMask & (~OVRManager.instance.extraHiddenLayers);
+		if (configuration.dynamicCullingMask)
+		{
+			foregroundCamera.cullingMask = (mainCamera.cullingMask & ~configuration.extraHiddenLayers) | configuration.extraVisibleLayers;
+		}
 		foregroundCamera.nearClipPlane = mainCamera.nearClipPlane;
 		foregroundCamera.farClipPlane = mainCamera.farClipPlane;
 
@@ -316,11 +398,11 @@ public class OVRExternalComposition : OVRComposition
 		{
 			OVRPose worldSpacePose = new OVRPose();
 			OVRPose trackingSpacePose = new OVRPose();
-			trackingSpacePose.position = OVRManager.instance.trackingOriginType == OVRManager.TrackingOrigin.EyeLevel ?
+			trackingSpacePose.position = trackingOrigin == OVRManager.TrackingOrigin.EyeLevel ?
 				OVRMixedReality.fakeCameraEyeLevelPosition :
 				OVRMixedReality.fakeCameraFloorLevelPosition;
 			trackingSpacePose.orientation = OVRMixedReality.fakeCameraRotation;
-			worldSpacePose = OVRExtensions.ToWorldSpacePose(trackingSpacePose);
+			worldSpacePose = OVRExtensions.ToWorldSpacePose(trackingSpacePose, mainCamera);
 
 			backgroundCamera.fieldOfView = OVRMixedReality.fakeCameraFov;
 			backgroundCamera.aspect = OVRMixedReality.fakeCameraAspect;
@@ -361,10 +443,13 @@ public class OVRExternalComposition : OVRComposition
 				}
 				else
 				{
-					OVRPose worldSpacePose = ComputeCameraWorldSpacePose(extrinsics);
+					OVRPose worldSpacePose = ComputeCameraWorldSpacePose(extrinsics, mainCamera);
 					backgroundCamera.transform.FromOVRPose(worldSpacePose);
 					foregroundCamera.transform.FromOVRPose(worldSpacePose);
 				}
+#if OVR_ANDROID_MRC
+				cameraPoseTimeArray[drawTextureIndex] = extrinsics.LastChangedTimeSeconds;
+#endif
 			}
 			else
 			{
@@ -421,6 +506,7 @@ public class OVRExternalComposition : OVRComposition
 			}
 		}
 
+		OVRManager.DisplayRefreshRateChanged -= DisplayRefreshRateChanged;
 		frameIndex = 0;
 #endif
 	}
@@ -458,6 +544,14 @@ public class OVRExternalComposition : OVRComposition
 			cachedAudioData.Clear();
 		}
 	}
+
+#if OVR_ANDROID_MRC
+
+	private void DisplayRefreshRateChanged(float fromRefreshRate, float toRefreshRate)
+	{
+		skipFrame = toRefreshRate > fpsThreshold;
+	}
+#endif
 
 }
 

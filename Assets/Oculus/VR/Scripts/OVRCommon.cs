@@ -1,21 +1,29 @@
-/************************************************************************************
-Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ *
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-Licensed under the Oculus Utilities SDK License Version 1.31 (the "License"); you may not use
-the Utilities SDK except in compliance with the License, which is provided at the time of installation
-or download, or which otherwise accompanies this software in either electronic or hard copy form.
-
-You may obtain a copy of the License at
-https://developer.oculus.com/licenses/utilities-1.31
-
-Unless required by applicable law or agreed to in writing, the Utilities SDK distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-ANY KIND, either express or implied. See the License for the specific language governing
-permissions and limitations under the License.
-************************************************************************************/
-
-#if USING_XR_MANAGEMENT && USING_XR_SDK_OCULUS
+#if USING_XR_MANAGEMENT && (USING_XR_SDK_OCULUS || USING_XR_SDK_OPENXR)
 #define USING_XR_SDK
+#endif
+
+#if UNITY_2020_1_OR_NEWER
+#define REQUIRES_XR_SDK
 #endif
 
 using UnityEngine;
@@ -28,33 +36,22 @@ using UnityEngine.XR;
 using UnityEngine.Experimental.XR;
 #endif
 
-#if UNITY_2017_2_OR_NEWER
 using InputTracking = UnityEngine.XR.InputTracking;
 using Node = UnityEngine.XR.XRNode;
 using NodeState = UnityEngine.XR.XRNodeState;
 using Device = UnityEngine.XR.XRDevice;
-#elif UNITY_2017_1_OR_NEWER
-using InputTracking = UnityEngine.VR.InputTracking;
-using Node = UnityEngine.VR.VRNode;
-using NodeState = UnityEngine.VR.VRNodeState;
-using Device = UnityEngine.VR.VRDevice;
-#else
-using InputTracking = UnityEngine.VR.InputTracking;
-using Node = UnityEngine.VR.VRNode;
-using Device = UnityEngine.VR.VRDevice;
-#endif
 
 /// <summary>
 /// Miscellaneous extension methods that any script can use.
 /// </summary>
-public static class OVRExtensions
+public static partial class OVRExtensions
 {
 	/// <summary>
 	/// Converts the given world-space transform to an OVRPose in tracking space.
 	/// </summary>
 	public static OVRPose ToTrackingSpacePose(this Transform transform, Camera camera)
 	{
-		//Initializing to identity, but for all Oculus headsets, down below the pose will be initialized to the runtime's pose value, so identity will never be returned.
+		// Initializing to identity, but for all Oculus headsets, down below the pose will be initialized to the runtime's pose value, so identity will never be returned.
 		OVRPose headPose = OVRPose.identity;
 
 		Vector3 pos;
@@ -69,28 +66,52 @@ public static class OVRExtensions
 		return ret;
 	}
 
+	/// <summary>
+	/// Converts the given pose from tracking-space to world-space.
+	/// </summary>
+	[Obsolete("ToWorldSpacePose should be invoked with an explicit mainCamera parameter")]
+	public static OVRPose ToWorldSpacePose(this OVRPose trackingSpacePose)
+	{
+		return ToWorldSpacePose(trackingSpacePose, Camera.main);
+	}
 
 	/// <summary>
 	/// Converts the given pose from tracking-space to world-space.
 	/// </summary>
-	public static OVRPose ToWorldSpacePose(OVRPose trackingSpacePose)
+	public static OVRPose ToWorldSpacePose(this OVRPose trackingSpacePose, Camera mainCamera)
+	{
+		// Transform from tracking-Space to head-Space
+		OVRPose poseInHeadSpace = trackingSpacePose.ToHeadSpacePose();
+
+		// Transform from head space to world space
+		var cameraTransform = mainCamera.transform.localToWorldMatrix;
+		var headSpaceTransform = Matrix4x4.TRS(
+			poseInHeadSpace.position, poseInHeadSpace.orientation, Vector3.one);
+		var worldSpaceTransform = cameraTransform * headSpaceTransform;
+		return new OVRPose
+		{
+			position = worldSpaceTransform.GetColumn(3),
+			orientation = worldSpaceTransform.rotation
+		};
+	}
+
+	/// <summary>
+	/// Converts the given pose from tracking-space to head-space.
+	/// </summary>
+	public static OVRPose ToHeadSpacePose(this OVRPose trackingSpacePose)
 	{
 		OVRPose headPose = OVRPose.identity;
 
 		Vector3 pos;
 		Quaternion rot;
-		if (OVRNodeStateProperties.GetNodeStatePropertyVector3(Node.Head, NodeStatePropertyType.Position, OVRPlugin.Node.Head, OVRPlugin.Step.Render, out pos))
+		if (OVRNodeStateProperties.GetNodeStatePropertyVector3(UnityEngine.XR.XRNode.Head, NodeStatePropertyType.Position, OVRPlugin.Node.Head, OVRPlugin.Step.Render, out pos))
 			headPose.position = pos;
-		if (OVRNodeStateProperties.GetNodeStatePropertyQuaternion(Node.Head, NodeStatePropertyType.Orientation, OVRPlugin.Node.Head, OVRPlugin.Step.Render, out rot))
+		if (OVRNodeStateProperties.GetNodeStatePropertyQuaternion(UnityEngine.XR.XRNode.Head, NodeStatePropertyType.Orientation, OVRPlugin.Node.Head, OVRPlugin.Step.Render, out rot))
 			headPose.orientation = rot;
 
-		// Transform from tracking-Space to head-Space
 		OVRPose poseInHeadSpace = headPose.Inverse() * trackingSpacePose;
 
-		// Transform from head space to world space
-		OVRPose ret = Camera.main.transform.ToOVRPose() * poseInHeadSpace;
-
-		return ret;
+		return poseInHeadSpace;
 	}
 
 	/// <summary>
@@ -187,6 +208,16 @@ public static class OVRExtensions
 		return new OVRPlugin.Vector3f() { x = v.x, y = v.y, z = -v.z };
 	}
 
+	public static Vector4 FromVector4f(this OVRPlugin.Vector4f v)
+	{
+		return new Vector4() { x = v.x, y = v.y, z = v.z, w = v.w };
+	}
+
+	public static OVRPlugin.Vector4f ToVector4f(this Vector4 v)
+	{
+		return new OVRPlugin.Vector4f() { x = v.x, y = v.y, z = v.z, w = v.w };
+	}
+
 	public static Quaternion FromQuatf(this OVRPlugin.Quatf q)
 	{
 		return new Quaternion() { x = q.x, y = q.y, z = q.z, w = q.w };
@@ -241,8 +272,9 @@ public static class OVRExtensions
 
 	public static Transform FindChildRecursive(this Transform parent, string name)
 	{
-		foreach (Transform child in parent)
+		for (int i = 0; i < parent.childCount; i++)
 		{
+			var child = parent.GetChild(i);
 			if (child.name.Contains(name))
 				return child;
 
@@ -251,6 +283,50 @@ public static class OVRExtensions
 				return result;
 		}
 		return null;
+	}
+
+	public static bool Equals(this Gradient gradient, Gradient otherGradient)
+	{
+		if (gradient.colorKeys.Length != otherGradient.colorKeys.Length || gradient.alphaKeys.Length != otherGradient.alphaKeys.Length)
+			return false;
+
+		for (int i = 0; i < gradient.colorKeys.Length; i++)
+		{
+			GradientColorKey key = gradient.colorKeys[i];
+			GradientColorKey otherKey = otherGradient.colorKeys[i];
+			if (key.color != otherKey.color || key.time != otherKey.time)
+				return false;
+		}
+
+		for (int i = 0; i < gradient.alphaKeys.Length; i++)
+		{
+			GradientAlphaKey key = gradient.alphaKeys[i];
+			GradientAlphaKey otherKey = otherGradient.alphaKeys[i];
+			if (key.alpha != otherKey.alpha || key.time != otherKey.time)
+				return false;
+		}
+
+		return true;
+	}
+
+	public static void CopyFrom(this Gradient gradient, Gradient otherGradient)
+	{
+		GradientColorKey[] colorKeys = new GradientColorKey[otherGradient.colorKeys.Length];
+		for (int i = 0; i < colorKeys.Length; i++)
+		{
+			Color col = otherGradient.colorKeys[i].color;
+			colorKeys[i].color = new Color(col.r, col.g, col.b, col.a);
+			colorKeys[i].time = otherGradient.colorKeys[i].time;
+		}
+
+		GradientAlphaKey[] alphaKeys = new GradientAlphaKey[otherGradient.alphaKeys.Length];
+		for (int i = 0; i < alphaKeys.Length; i++)
+		{
+			alphaKeys[i].alpha = otherGradient.alphaKeys[i].alpha;
+			alphaKeys[i].time = otherGradient.alphaKeys[i].time;
+		}
+
+		gradient.SetKeys(colorKeys, alphaKeys);
 	}
 }
 
@@ -267,9 +343,7 @@ public enum NodeStatePropertyType
 
 public static class OVRNodeStateProperties
 {
-#if UNITY_2017_1_OR_NEWER
 	private static List<NodeState> nodeStateList = new List<NodeState>();
-#endif
 
 	public static bool IsHmdPresent()
 	{
@@ -279,6 +353,8 @@ public static class OVRNodeStateProperties
 		XRDisplaySubsystem currentDisplaySubsystem = OVRManager.GetCurrentDisplaySubsystem();
 		if (currentDisplaySubsystem != null)
 			return currentDisplaySubsystem.running;				//In 2019.3, this should be changed to currentDisplaySubsystem.isConnected, but this is a fine placeholder for now.
+		return false;
+#elif REQUIRES_XR_SDK
 		return false;
 #else
 		return Device.isPresent;
@@ -296,10 +372,8 @@ public static class OVRNodeStateProperties
 					retVec = OVRPlugin.GetNodeAcceleration(ovrpNodeType, stepType).FromFlippedZVector3f();
 					return true;
 				}
-#if UNITY_2017_1_OR_NEWER
 				if (GetUnityXRNodeStateVector3(nodeType, NodeStatePropertyType.Acceleration, out retVec))
 					return true;
-#endif
 				break;
 
 			case NodeStatePropertyType.AngularAcceleration:
@@ -308,10 +382,8 @@ public static class OVRNodeStateProperties
 					retVec = OVRPlugin.GetNodeAngularAcceleration(ovrpNodeType, stepType).FromFlippedZVector3f();
 					return true;
 				}
-#if UNITY_2017_2_OR_NEWER
 				if (GetUnityXRNodeStateVector3(nodeType, NodeStatePropertyType.AngularAcceleration, out retVec))
 					return true;
-#endif
 				break;
 
 			case NodeStatePropertyType.Velocity:
@@ -320,10 +392,8 @@ public static class OVRNodeStateProperties
 					retVec = OVRPlugin.GetNodeVelocity(ovrpNodeType, stepType).FromFlippedZVector3f();
 					return true;
 				}
-#if UNITY_2017_1_OR_NEWER
 				if (GetUnityXRNodeStateVector3(nodeType, NodeStatePropertyType.Velocity, out retVec))
 					return true;
-#endif
 				break;
 
 			case NodeStatePropertyType.AngularVelocity:
@@ -332,10 +402,8 @@ public static class OVRNodeStateProperties
 					retVec = OVRPlugin.GetNodeAngularVelocity(ovrpNodeType, stepType).FromFlippedZVector3f();
 					return true;
 				}
-#if UNITY_2017_2_OR_NEWER
 				if (GetUnityXRNodeStateVector3(nodeType, NodeStatePropertyType.AngularVelocity, out retVec))
 					return true;
-#endif
 				break;
 
 			case NodeStatePropertyType.Position:
@@ -344,10 +412,8 @@ public static class OVRNodeStateProperties
 					retVec = OVRPlugin.GetNodePose(ovrpNodeType, stepType).ToOVRPose().position;
 					return true;
 				}
-#if UNITY_2017_1_OR_NEWER
 				if (GetUnityXRNodeStateVector3(nodeType, NodeStatePropertyType.Position, out retVec))
 					return true;
-#endif
 				break;
 		}
 
@@ -365,16 +431,13 @@ public static class OVRNodeStateProperties
 					retQuat = OVRPlugin.GetNodePose(ovrpNodeType, stepType).ToOVRPose().orientation;
 					return true;
 				}
-#if UNITY_2017_1_OR_NEWER
 				if (GetUnityXRNodeStateQuaternion(nodeType, NodeStatePropertyType.Orientation, out retQuat))
 					return true;
-#endif
 				break;
 		}
 		return false;
 	}
 
-#if UNITY_2017_1_OR_NEWER
 	private static bool ValidateProperty(Node nodeType, ref NodeState requestedNodeState)
 	{
 		InputTracking.GetNodeStates(nodeStateList);
@@ -397,9 +460,7 @@ public static class OVRNodeStateProperties
 
 		return nodeStateFound;
 	}
-#endif
 
-#if UNITY_2017_1_OR_NEWER
 	private static bool GetUnityXRNodeStateVector3(Node nodeType, NodeStatePropertyType propertyType, out Vector3 retVec)
 	{
 		retVec = Vector3.zero;
@@ -418,12 +479,10 @@ public static class OVRNodeStateProperties
 		}
 		else if (propertyType == NodeStatePropertyType.AngularAcceleration)
 		{
-#if UNITY_2017_2_OR_NEWER
 			if (requestedNodeState.TryGetAngularAcceleration(out retVec))
 			{
 				return true;
 			}
-#endif
 		}
 		else if (propertyType == NodeStatePropertyType.Velocity)
 		{
@@ -434,12 +493,10 @@ public static class OVRNodeStateProperties
 		}
 		else if (propertyType == NodeStatePropertyType.AngularVelocity)
 		{
-#if UNITY_2017_2_OR_NEWER
 			if (requestedNodeState.TryGetAngularVelocity(out retVec))
 			{
 				return true;
 			}
-#endif
 		}
 		else if (propertyType == NodeStatePropertyType.Position)
 		{
@@ -451,9 +508,7 @@ public static class OVRNodeStateProperties
 
 		return false;
 	}
-#endif
 
-#if UNITY_2017_1_OR_NEWER
 	private static bool GetUnityXRNodeStateQuaternion(Node nodeType, NodeStatePropertyType propertyType, out Quaternion retQuat)
 	{
 		retQuat = Quaternion.identity;
@@ -473,7 +528,6 @@ public static class OVRNodeStateProperties
 
 		return false;
 	}
-#endif
 
 }
 
@@ -582,6 +636,13 @@ public struct OVRPose
 		result.Orientation.z = orientation.z;
 		result.Orientation.w = orientation.w;
 		return result;
+	}
+
+	public OVRPose Rotate180AlongX()
+	{
+		var ret = this;
+		ret.orientation *= Quaternion.Euler(180, 0, 0);
+		return ret;
 	}
 }
 

@@ -1,18 +1,22 @@
-/************************************************************************************
-Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
-
-Licensed under the Oculus Utilities SDK License Version 1.31 (the "License"); you may not use
-the Utilities SDK except in compliance with the License, which is provided at the time of installation
-or download, or which otherwise accompanies this software in either electronic or hard copy form.
-
-You may obtain a copy of the License at
-https://developer.oculus.com/licenses/utilities-1.31
-
-Unless required by applicable law or agreed to in writing, the Utilities SDK distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-ANY KIND, either express or implied. See the License for the specific language governing
-permissions and limitations under the License.
-************************************************************************************/
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ *
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -50,21 +54,26 @@ public class OVRHeadsetEmulator : MonoBehaviour {
 	private bool hasSentEvent = false;
 	private bool emulatorHasInitialized = false;
 
+	private CursorLockMode previousCursorLockMode = CursorLockMode.None;
+
 	// Use this for initialization
 	void Start () {
 	}
 
 	// Update is called once per frame
 	void Update () {
+		//todo: enable for Unity Input System
+#if ENABLE_LEGACY_INPUT_MANAGER
 		if (!emulatorHasInitialized)
 		{
 			if (OVRManager.OVRManagerinitialized)
 			{
-				Cursor.lockState = CursorLockMode.None;
+				previousCursorLockMode = Cursor.lockState;
 				manager = OVRManager.instance;
 				recordedHeadPoseRelativeOffsetTranslation = manager.headPoseRelativeOffsetTranslation;
 				recordedHeadPoseRelativeOffsetRotation = manager.headPoseRelativeOffsetRotation;
 				emulatorHasInitialized = true;
+				lastFrameEmulationActivated = false;
 			}
 			else
 				return;
@@ -72,7 +81,11 @@ public class OVRHeadsetEmulator : MonoBehaviour {
 		bool emulationActivated = IsEmulationActivated();
 		if (emulationActivated)
 		{
-			Cursor.lockState = CursorLockMode.Locked;
+			if (!lastFrameEmulationActivated)
+			{
+				previousCursorLockMode = Cursor.lockState;
+				Cursor.lockState = CursorLockMode.Locked;
+			}
 
 			if (!lastFrameEmulationActivated && resetHmdPoseOnRelease)
 			{
@@ -121,9 +134,10 @@ public class OVRHeadsetEmulator : MonoBehaviour {
 		}
 		else
 		{
-			Cursor.lockState = CursorLockMode.None;
 			if (lastFrameEmulationActivated)
 			{
+				Cursor.lockState = previousCursorLockMode;
+
 				recordedHeadPoseRelativeOffsetTranslation = manager.headPoseRelativeOffsetTranslation;
 				recordedHeadPoseRelativeOffsetRotation = manager.headPoseRelativeOffsetRotation;
 
@@ -135,6 +149,7 @@ public class OVRHeadsetEmulator : MonoBehaviour {
 			}
 		}
 		lastFrameEmulationActivated = emulationActivated;
+#endif
 	}
 
 	bool IsEmulationActivated()
