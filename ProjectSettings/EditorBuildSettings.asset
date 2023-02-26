@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/main_menu.unity
     guid: 8d1aff138a680b84e89df15753fb3ff2
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/user_profile.unity
     guid: bd7ce392e27b1b24986ee7f018e8dd05
   - enabled: 1
@@ -17,15 +17,17 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/light_pattern_memory_game.unity
     guid: e339cd518b5db9647906047a91439071
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/add_new_profile.unity
     guid: c10462d5795ffb447a8bdc67fc5651a1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/personalization.unity
     guid: 190a166342a32734a95266e704076db1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/edit_profile.unity
     guid: 096875c6ee0c5e445888bf3832a9f1c9
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: aa2fdc6dc69a86646962e3992d88fb83,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 328735aa116ef3140a5179f64e52d79f,
       type: 2}

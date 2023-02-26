@@ -1,13 +1,23 @@
-/************************************************************************************
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ *
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.  
-
-See SampleFramework license.txt for license terms.  Unless required by applicable law 
-or agreed to in writing, the sample code is provided “AS IS” WITHOUT WARRANTIES OR 
-CONDITIONS OF ANY KIND, either express or implied.  See the license for specific 
-language governing permissions and limitations under the license.
-
-************************************************************************************/
 
 using System;
 using System.Collections;
@@ -49,6 +59,7 @@ namespace OculusSampleFramework
 				return false;
 			}
 		}
+
 		public override bool EnableState
 		{
 			get
@@ -98,7 +109,7 @@ namespace OculusSampleFramework
 			switch (_fingerToFollow)
 			{
 				case OVRPlugin.HandFinger.Thumb:
-					boneToTestCollisions = OVRSkeleton.BoneId.Hand_Index3;
+					boneToTestCollisions = OVRSkeleton.BoneId.Hand_Thumb3;
 					break;
 				case OVRPlugin.HandFinger.Index:
 					boneToTestCollisions = OVRSkeleton.BoneId.Hand_Index3;
@@ -145,16 +156,17 @@ namespace OculusSampleFramework
 			float currentScale = hand.HandScale;
 			// push tool into the tip based on how wide it is. so negate the direction
 			Transform capsuleTransform = _capsuleToTrack.CapsuleCollider.transform;
+			// NOTE: use time settings 0.0111111/0.02 to make collisions work correctly!
 			Vector3 capsuleDirection = capsuleTransform.right;
-			Vector3 trackedPosition = capsuleTransform.position + _capsuleToTrack.CapsuleCollider.height * 0.5f
+			Vector3 capsuleTipPosition = capsuleTransform.position + _capsuleToTrack.CapsuleCollider.height * 0.5f
 			  * capsuleDirection;
-			Vector3 sphereRadiusOffset = currentScale * _fingerTipPokeToolView.SphereRadius *
+			Vector3 toolSphereRadiusOffsetFromTip = currentScale * _fingerTipPokeToolView.SphereRadius *
 			  capsuleDirection;
 			// push tool back so that it's centered on transform/bone
-			Vector3 toolPosition = trackedPosition + sphereRadiusOffset;
+			Vector3 toolPosition = capsuleTipPosition + toolSphereRadiusOffsetFromTip;
 			transform.position = toolPosition;
 			transform.rotation = capsuleTransform.rotation;
-			InteractionPosition = trackedPosition;
+			InteractionPosition = capsuleTipPosition;
 
 			UpdateAverageVelocity();
 
