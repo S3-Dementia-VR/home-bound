@@ -17,31 +17,35 @@ public class OnChangeTeleport : MonoBehaviour
     }
     void Update()
     {
-        // if (Vector3.Distance(targetGameObjectOriginal.transform.position, targetGameObject.transform.position) != 0)
-        // {
-        //     // StartCoroutine( fadeScreen.FadeOut() );
-        //     StartCoroutine( teleport() );
-        //     // teleport();            
-        //     // StartCoroutine( fadeScreen.FadeIn() );
-        //     // fadeScreen.FadeIn();
-        // }
     }
     
     public IEnumerator teleport()
     {
         while (true){
             yield return new WaitUntil(IsChanged);
-            targetGameObject.transform.position = targetGameObjectOriginal.transform.position;
             yield return StartCoroutine( fadeScreen.FadeOut() );
             userView.position = targetLocation.transform.position;
             userView.rotation = targetLocation.transform.rotation;
-            yield return StartCoroutine( fadeScreen.FadeIn() );
+            targetGameObject.transform.position = targetGameObjectOriginal.transform.position;
             yield return null;
+            yield return StartCoroutine( fadeScreen.FadeIn() );
+            yield return new WaitUntil(IsOrigin);
         }
     }
     bool IsChanged()
     {
         if (Vector3.Distance(targetGameObjectOriginal.transform.position, targetGameObject.transform.position) != 0)
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
+    bool IsOrigin()
+    {
+        if (Vector3.Distance(targetGameObjectOriginal.transform.position, targetGameObject.transform.position) == 0)
         {
             return true;
         }

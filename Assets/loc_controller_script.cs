@@ -5,6 +5,7 @@ using UnityEngine;
 public class loc_controller_script : MonoBehaviour
 {
     public GameObject small_living_room;
+    public float time_out;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,10 +18,14 @@ public class loc_controller_script : MonoBehaviour
         
     }
     public void switch_LivingRoom(){
+        StartCoroutine( switch_LivingRoom_coroutine() );
+    }
+    public IEnumerator switch_LivingRoom_coroutine(){
         if (small_living_room.activeSelf){
             small_living_room.SetActive(false);
         }
         else{
+            yield return new WaitForSeconds(time_out);
             small_living_room.SetActive(true);
         }
     }
