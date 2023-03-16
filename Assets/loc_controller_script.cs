@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class loc_controller_script : MonoBehaviour
 {
-    public GameObject big_living_room;
     public GameObject small_living_room;
     // Start is called before the first frame update
     void Start()
@@ -18,13 +17,11 @@ public class loc_controller_script : MonoBehaviour
         
     }
     public void switch_LivingRoom(){
-        if (big_living_room.activeSelf){
-            big_living_room.SetActive(false);
-            small_living_room.SetActive(true);
+        if (small_living_room.activeSelf){
+            small_living_room.SetActive(false);
         }
         else{
-            big_living_room.SetActive(true);
-            small_living_room.SetActive(false);
+            small_living_room.SetActive(true);
         }
     }
 }
