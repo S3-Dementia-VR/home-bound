@@ -15,18 +15,26 @@ public class FadeScreen : MonoBehaviour
         rend = GetComponent<Renderer>();
         if(fadeOnStart)
         {
-            FadeIn();
+            StartCoroutine(FadeRoutine(1, 0));
         }
     }
 
-    public void FadeIn()
+    public IEnumerator FadeOutIn()
     {
-        Fade(1, 0);
+        yield return StartCoroutine(FadeRoutine(0, 1));
+        yield return StartCoroutine(FadeRoutine(1, 0));
     }
 
-    public void FadeOut()
+    public IEnumerator FadeIn()
     {
-        Fade(0, 1);
+        yield return StartCoroutine(FadeRoutine(1, 0));
+        // Fade(1, 0);
+    }
+
+    public IEnumerator FadeOut()
+    {
+        yield return StartCoroutine(FadeRoutine(0, 1));
+        // Fade(0, 1);
     }
 
     public void Fade(float alphaIn, float alphaOut)
