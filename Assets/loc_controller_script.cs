@@ -21,12 +21,13 @@ public class loc_controller_script : MonoBehaviour
         StartCoroutine( switch_LivingRoom_coroutine() );
     }
     public IEnumerator switch_LivingRoom_coroutine(){
+        yield return new WaitForSeconds(time_out);
         if (small_living_room.activeSelf){
             small_living_room.SetActive(false);
         }
         else{
-            yield return new WaitForSeconds(time_out);
             small_living_room.SetActive(true);
         }
+        yield return null;
     }
 }
