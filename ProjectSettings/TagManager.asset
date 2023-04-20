@@ -8,6 +8,8 @@ TagManager:
   - Living
   - Dining
   - Garden
+  - lb_perchTarget
+  - lb_groundTarget
   layers:
   - Default
   - TransparentFX
@@ -19,7 +21,7 @@ TagManager:
   - Living
   - Dining
   - Garden
-  - 
+  - Ground_Garden
   - 
   - 
   - 
