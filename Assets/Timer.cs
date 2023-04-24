@@ -11,6 +11,9 @@ public class Timer : MonoBehaviour
 
     private TimeSpan timePlaying;
     private float elapsedTime;
+    public float livingTime;
+    public float diningTime;
+    public float gardenTime;
 
     // Start is called before the first frame update
     void Start()
@@ -21,9 +24,11 @@ public class Timer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // overall time
         elapsedTime += Time.deltaTime;
         timePlaying = TimeSpan.FromSeconds(elapsedTime);
         string timePlayingStr = timePlaying.ToString("mm':'ss");
+
         timeDisplay.text = timePlayingStr;
     }
 }

@@ -11,6 +11,7 @@ public class loc_controller_script : MonoBehaviour
     public GameObject use_grab_interactor_right2;
     public GameObject nature_view_light;
     public lb_BirdController bird_controller;
+    public stat_timer_script view_stat;
     public float time_out;
 
     // Start is called before the first frame update
@@ -22,7 +23,15 @@ public class loc_controller_script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-  
+        if (small_living_room.activeSelf){
+            view_stat.livingTime += Time.deltaTime;
+        }
+        if (small_dining_room.activeSelf){
+            view_stat.diningTime += Time.deltaTime;
+        }
+        if (small_garden_room.activeSelf){
+            view_stat.gardenTime += Time.deltaTime;
+        }
     }
 
     public void switch_LivingRoom(){
