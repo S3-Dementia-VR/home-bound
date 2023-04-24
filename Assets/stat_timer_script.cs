@@ -22,6 +22,6 @@ public class stat_timer_script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeDisplay.text = "Living room: " + Mathf.RoundToInt(livingTime) + "s \n Dining room: " + Mathf.RoundToInt(diningTime) + "s \n Garden room: " + Mathf.RoundToInt(gardenTime) + "s";
+        timeDisplay.text = " Living room: " + Mathf.RoundToInt(livingTime) + "s \n Dining room: " + Mathf.RoundToInt(diningTime) + "s \n Garden room: " + Mathf.RoundToInt(gardenTime) + "s";
     }
 }
