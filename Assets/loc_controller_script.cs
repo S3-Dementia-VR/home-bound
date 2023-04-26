@@ -31,6 +31,10 @@ public class loc_controller_script : MonoBehaviour
         }
         if (small_garden_room.activeSelf){
             view_stat.gardenTime += Time.deltaTime;
+        } else{
+            if (nature_view_light.activeSelf){
+                view_stat.gardenTime += Time.deltaTime;
+            }
         }
     }
 
