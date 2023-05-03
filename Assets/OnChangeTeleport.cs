@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class OnChangeTeleport : MonoBehaviour
 {
-    public Transform userView;
-    public Transform targetGameObject;
-    public Transform targetGameObjectOriginal;
-    public Transform targetLocation;
+    public Transform userView;                          // location of user to be teleported
+    public Transform targetGameObject;                  // location of invisble object to be triggered
+    public Transform targetGameObjectOriginal;          // Original coordinates; to track if location has changed
+    public Transform targetLocation;                    // location to be teleported to
 
-    public FadeScreen fadeScreen;
+    public FadeScreen fadeScreen;                       // for fadescreen
 
     void Start()
     {
@@ -20,7 +20,8 @@ public class OnChangeTeleport : MonoBehaviour
     }
     
     public IEnumerator teleport()
-    {
+    {   
+        // teleport function; changes the position of user gameobject
         while (true){
             yield return new WaitUntil(IsChanged);
             yield return StartCoroutine( fadeScreen.FadeOut() );
@@ -32,8 +33,10 @@ public class OnChangeTeleport : MonoBehaviour
             yield return new WaitUntil(IsOrigin);
         }
     }
+
     bool IsChanged()
     {
+        // detects change in coodinates
         if (Vector3.Distance(targetGameObjectOriginal.transform.position, targetGameObject.transform.position) != 0)
         {
             return true;
@@ -43,8 +46,10 @@ public class OnChangeTeleport : MonoBehaviour
             return false;
         }
     }
+
     bool IsOrigin()
     {
+        // checks if original position
         if (Vector3.Distance(targetGameObjectOriginal.transform.position, targetGameObject.transform.position) == 0)
         {
             return true;
