@@ -18,6 +18,9 @@ public class tv_remote_script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!(tv.isPaused)){
+            bgMusic.Pause();
+        }
     }
 
     public void switch_TV_on_off(){

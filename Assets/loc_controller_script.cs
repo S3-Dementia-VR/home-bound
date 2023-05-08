@@ -32,11 +32,12 @@ public class loc_controller_script : MonoBehaviour
     public GameObject  tv_screen;
     // radio
     public AudioSource old_music;
+    public AudioSource bgMusic;
 
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(LateStart(0.1f));
+        StartCoroutine(LateStart(time_out));
         // tv
         tv.Pause();
         tv_screen.transform.localScale = new Vector3(0, 0 ,0);
@@ -138,13 +139,15 @@ public class loc_controller_script : MonoBehaviour
     public IEnumerator switch_NatureView_coroutine(){
         yield return new WaitForSeconds(time_out);
         bird_controller.AllUnspawn();
-        if (nature_view_light.activeSelf){
+        if (nature_view_light.activeSelf){                // Turn off outside settings
             nature_view_light.SetActive(false);
             bird_controller.AllPause();                   // Pause spawning if not in garden area
+            bgMusic.UnPause();
         }
         else{
             nature_view_light.SetActive(true);
             bird_controller.AllUnPause();
+            bgMusic.Pause();
         }
         yield return null;
     }

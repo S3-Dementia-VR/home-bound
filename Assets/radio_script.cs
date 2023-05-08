@@ -14,8 +14,10 @@ public class radio_script : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {        
+        if (light_on.activeSelf){
+            bgMusic.Pause();
+        }
     }
 
     public void switch_Audio_on_off(){
