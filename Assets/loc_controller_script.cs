@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class loc_controller_script : MonoBehaviour
 {
@@ -26,11 +27,19 @@ public class loc_controller_script : MonoBehaviour
     // gameobject for PhotoUpload
     public GameObject photo;
 
+    // tv
+    public VideoPlayer tv;
+    public GameObject  tv_screen;
+    // radio
+    public AudioSource old_music;
 
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(LateStart(time_out));
+        StartCoroutine(LateStart(0.1f));
+        // tv
+        tv.Pause();
+        tv_screen.transform.localScale = new Vector3(0, 0 ,0);
     }
 
     // Update is called once per frame
@@ -75,6 +84,8 @@ public class loc_controller_script : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         // Pause birdspawning at the start
         switch_NatureView();
+        // radio
+        old_music.Pause();
     }
     public IEnumerator switch_LivingRoom_coroutine(){
         yield return new WaitForSeconds(time_out);  // wait for transition

@@ -66,7 +66,7 @@ public class lb_BirdController : MonoBehaviour {
 	}
 
 	public void AllUnspawn(){
-		for(int i=myBirds.Length-1;i>0;i--){
+		for(int i=myBirds.Length-1;i>=0;i--){
 				Unspawn(myBirds[i]);
 		}
 	}
