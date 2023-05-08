@@ -18,7 +18,7 @@ public class loc_controller_script : MonoBehaviour
     public lb_BirdController bird_controller;
     public float time_out;
     public stat_timer_script view_stat;
-    // gameobject for companion
+    // gameobject for companion model
     public GameObject insideHouse;
     public GameObject diningRoom;
     public GameObject livingRoom;
