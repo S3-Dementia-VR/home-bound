@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class loc_controller_script : MonoBehaviour
 {
-    public GameObject small_living_room;
+    // gameobject for interactables
+    public GameObject small_living_room;                        
     public GameObject small_dining_room;
     public GameObject small_garden_room;
+    // gameobject for hand gestures
     public GameObject use_grab_interactor_right1;
     public GameObject use_grab_interactor_right2;
-    public GameObject nature_view_light;
+    // gameobject for lights
+    public GameObject nature_view_light;    
+    // gameobject for birds and Statistics
     public lb_BirdController bird_controller;
-    public stat_timer_script view_stat;
     public float time_out;
+    public stat_timer_script view_stat;
+    // gameobject for companion
+    public GameObject insideHouse;
+    public GameObject diningRoom;
+    public GameObject livingRoom;
+    public GameObject gardenArea;
+    public GameObject birdwatching;
+    // gameobject for PhotoUpload
+    public GameObject photo;
+
 
     // Start is called before the first frame update
     void Start()
@@ -50,6 +63,13 @@ public class loc_controller_script : MonoBehaviour
     public void switch_NatureView(){
         StartCoroutine( switch_NatureView_coroutine() );
     }
+    public void switch_InsideEntrance(){
+        StartCoroutine( switch_InsideEntrance_coroutine() );
+    }
+    public void switch_BirdWatchSeat(){
+        StartCoroutine( switch_BirdWatchSeat_coroutine() );
+    }
+
     IEnumerator LateStart(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
@@ -61,9 +81,13 @@ public class loc_controller_script : MonoBehaviour
         bird_controller.AllUnspawn();               // unspawn possibly misplaced birds
         if (small_living_room.activeSelf){          // checks if interactable area is visible
             small_living_room.SetActive(false);     // deactivate area 
+            livingRoom.SetActive(false);            // deactivate companion
+            photo.SetActive(false);                 // deactivate photoupload
         }
         else{
             small_living_room.SetActive(true);
+            livingRoom.SetActive(true);
+            photo.SetActive(true);
         }
         yield return null;
     }
@@ -73,9 +97,11 @@ public class loc_controller_script : MonoBehaviour
         bird_controller.AllUnspawn();
         if (small_dining_room.activeSelf){
             small_dining_room.SetActive(false);
+            diningRoom.SetActive(false);
         }
         else{
             small_dining_room.SetActive(true);
+            diningRoom.SetActive(true);
         }
         yield return null;
     }
@@ -86,12 +112,14 @@ public class loc_controller_script : MonoBehaviour
         if (small_garden_room.activeSelf){
             small_garden_room.SetActive(false);
             use_grab_interactor_right1.SetActive(false);    // deactivate use grabs interactors that causes bug
-            use_grab_interactor_right2.SetActive(false);    
+            use_grab_interactor_right2.SetActive(false);  
+            gardenArea.SetActive(false);   
         }
         else{
             small_garden_room.SetActive(true);
             use_grab_interactor_right1.SetActive(true);
             use_grab_interactor_right2.SetActive(true);
+            gardenArea.SetActive(true);   
         }
         yield return null;
     }
@@ -106,6 +134,30 @@ public class loc_controller_script : MonoBehaviour
         else{
             nature_view_light.SetActive(true);
             bird_controller.AllUnPause();
+        }
+        yield return null;
+    }
+    
+    public IEnumerator switch_BirdWatchSeat_coroutine(){
+        yield return new WaitForSeconds(time_out); 
+        bird_controller.AllUnspawn();          
+        if (birdwatching.activeSelf){   
+            birdwatching.SetActive(false);
+        }
+        else{
+            birdwatching.SetActive(true);
+        }
+        yield return null;
+    }
+    
+    public IEnumerator switch_InsideEntrance_coroutine(){
+        yield return new WaitForSeconds(time_out); 
+        bird_controller.AllUnspawn();          
+        if (insideHouse.activeSelf){   
+            insideHouse.SetActive(false);
+        }
+        else{
+            insideHouse.SetActive(true);
         }
         yield return null;
     }
